@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <!-- <style>
+    #live2dcanvas {
+        border: 0 !important;
+    }
+    </style> -->
+    <style>
+        *{
+            padding: 0;
+            margin: 0;
+            list-style: none;
+        }
+        body{
+            background-color: #000;
+        }
+        .container{
+            font-size: .12rem;
+            position: relative;
+        }
+        canvas{
+            position: absolute;
+            z-index: -1;
+        }
+        .message{
+            position: absolute;
+            left: 50%;
+            top: 60%;
+            transform: translate(-50%,-50%);
+            width: 50%;
+            height: 50%;
+            font-size: .36rem;
+            text-align: center;
+            line-height: 50%;
+            /* border: 1px solid #000; */
+            box-shadow: 0 0 2px 2px #000;
+            /* text-shadow: 0.1em 0.1em 0.05em rgb(255, 255, 255); */
+            text-shadow: 2px 3px 3px #000;
+	        /* box-shadow: 0px 0px .4em 2px #ccc; */
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+        .message::before{
+            content: "";
+            width: 3px;
+            height: 2px;
+            background-color: #f90;
+            position: absolute;
+            top: -1px;
+            box-shadow: 1px 0px 2px 1px rgb(7, 255, 255),
+                        1px 0px 4px 2px rgb(181, 230, 119),
+                        1px 0px 4px 2px rgb(119, 163, 230),
+                        1px 0px 6px 2px rgb(213, 126, 224),
+                        1px 0px 8px 2px rgb(228, 24, 24);
+            animation: mood1 20s infinite;
+        }
+        .message>.i1{
+            content: "";
+            width: 3px;
+            height: 2px;
+            background-color: #f90;
+            position: absolute;
+            top: -1px;
+            box-shadow: 1px 0px 2px 1px rgb(7, 255, 255),
+                        1px 0px 4px 2px rgb(181, 230, 119),
+                        1px 0px 4px 2px rgb(119, 163, 230),
+                        1px 0px 6px 2px rgb(213, 126, 224),
+                        1px 0px 8px 2px rgb(228, 24, 24);
+            animation: mood1 18.5s infinite;
+        }
+        .message>.i2{
+            content: "";
+            width: 3px;
+            height: 2px;
+            background-color: #f90;
+            position: absolute;
+            top: -1px;
+            box-shadow: 1px 0px 2px 1px rgb(7, 255, 255),
+                        1px 0px 4px 2px rgb(181, 230, 119),
+                        1px 0px 4px 2px rgb(119, 163, 230),
+                        1px 0px 6px 2px rgb(213, 126, 224),
+                        1px 0px 8px 2px rgb(228, 24, 24);
+            animation: mood2 18.5s infinite;
+        }
+        .message::after{
+            content: "";
+            width: 3px;
+            height: 2px;
+            background-color: #f90;
+            position: absolute;
+            top: -1px;
+            box-shadow: 1px 0px 2px 1px rgb(7, 255, 255),
+                        1px 0px 4px 2px rgb(181, 230, 119),
+                        1px 0px 4px 2px rgb(119, 163, 230),
+                        1px 0px 6px 2px rgb(213, 126, 224),
+                        1px 0px 8px 2px rgb(228, 24, 24);
+            animation: mood2 20s infinite;
+        }
+        .close{
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: .9rem;
+            height: .3rem;
+            line-height: .3rem;
+            text-align: center;
+            border: 1px solid #ccc;
+            cursor: pointer;
+            font-size: .14rem;
+            text-shadow: 0.1em 0.1em 0.05em rgb(255, 255, 255);
+        }
+        .close:hover{
+            background-color: rgb(255, 0, 0);
+        }
+        .tits{
+            height: 1.1rem;
+            display: flex;
+            font-size: .16rem;
+            font-weight: 700;
+            padding: 0 10px;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: .2rem;
+        }
+        .tits>.left,
+        .tits>.center,
+        .tits>.right{
+            width: 2rem;
+        }
+        .tits>.right{
+            text-align: right;
+        }
+        .tits>.left{
+            color: #fff;
+        }
+        .start{
+            width: 1rem;
+            height: 0.5rem;
+            font-size: .16rem;
+            /* margin-top: .1rem; */
+            cursor: pointer;
+        }
+        .info{
+            position: relative;
+            display: flex;
+            font-size: .14rem;
+            justify-content: space-around;
+        }
+        .info>.column{
+            position: absolute;
+            right: -1rem;
+            top: 0;
+            width: 1rem;
+            height: .5rem;
+            cursor: pointer;
+            text-align: center;
+            line-height: .5rem;
+            display: none;
+            background-color: rgb(136, 156, 223);
+            border: 1px solid #ccc;
+        }
+        .info>.list{
+            /* display: inline-block; */
+        }
+        .info>.list>.ul>.li>input,
+        .center_tit>input,
+        .tits>.left>input{
+            width: 1rem;
+            height: .5rem;
+            margin-bottom: .2rem;
+            text-align: center;
+            line-height: .5rem;
+            border: 1px solid rgb(97, 155, 231);
+        }
+        .center_tit>input{
+            margin-bottom: 0;
+            margin: 0 auto;
+        }
+        .center_tit{
+            font-size: .2rem;
+            font-weight: 700;
+            padding-top: .1rem;
+            text-align: center;
+            color: #fff;
+        }
+        .info>.list>.ul>.li>p{
+            width: 1rem;
+            height: .5rem;
+            margin-bottom: .2rem;
+            text-align: center;
+            line-height: .5rem;
+            border: 1px solid #ccc;
+            color: #fff;
+            font-weight: 700;
+            box-shadow: 0 0 10px 1px #eee;
+            text-shadow: 2px 3px 3px #000;
+            /* background-color: #fff; */
+            /* text-shadow: 0.1em 0.1em 0.05em rgb(252, 189, 189),-0.1em -0.1em 0.05em rgb(252, 129, 129); */
+        }
+        .is_none{
+            display: none;
+        }
+        .is_show{
+            display: block;
+        }
+        .add{
+            width: 1rem;
+            height: .5rem;
+            text-align: center;
+            line-height: .5rem;
+            cursor: pointer;
+            border: 1px solid #ccc;
+            background-color: rgb(136, 156, 223);
+            display: none;
+        }
+        .right>span{
+            width: 100%;
+            height: 100%;
+        }
+        .right>.complete{
+            display: none;
+            cursor: pointer;
+            color: #fff;
+        }
+        .tit{
+            text-align: center;
+        }
+        .edit{
+            cursor: pointer;
+            color: #fff;
+        }
+
+        @keyframes mood1{
+            0%{
+                top: -1px;
+                left: 0;
+                transform: rotateZ(0deg);
+                box-shadow: 0 0 2px 2px rgb(115, 142, 218), 0 0 8px 8px rgb(99, 241, 218);
+            }
+            35%{
+                top: -1px;
+                left: 100%;
+                transform: rotateZ(0deg);
+            }
+            50%{
+                top: 100%;
+                left: 100%;
+                transform: rotateZ(90deg);
+                box-shadow: 0 0 2px 2px rgb(185, 120, 120), 0 0 8px 8px rgb(231, 96, 96);
+            }
+            85%{
+                top: 100%;
+                left: 0%;
+                transform: rotateZ(180deg)
+            }
+            100%{
+                top: 0%;
+                left: 0%;
+                transform: rotateZ(270deg);
+                box-shadow: 0 0 2px 2px rgb(115, 142, 218), 0 0 8px 8px rgb(99, 241, 218);
+            }
+        }
+
+        @keyframes mood2{
+            0%{
+                top: 100%;
+                right: 0;
+                transform: rotateZ(0deg);
+                box-shadow: 0 0 2px 2px rgb(189, 110, 159), 0 0 8px 8px rgb(235, 57, 235);
+            }
+            35%{
+                top: 100%;
+                right: 100%;
+                transform: rotateZ(0deg);
+            }
+            50%{
+                top: 0%;
+                right: 100%;
+                transform: rotateZ(90deg);
+                box-shadow: 0 0 2px 2px rgb(69, 107, 212), 0 0 8px 8px rgb(75, 142, 219);
+            }
+            85%{
+                top: 0%;
+                right: 0%;
+                transform: rotateZ(180deg)
+            }
+            100%{
+                top: 100%;
+                right: 0%;
+                transform: rotateZ(270deg);
+                box-shadow: 0 0 2px 2px rgb(189, 110, 159), 0 0 8px 8px rgb(235, 57, 235);
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <canvas id="myCanvas"></canvas>
+    <div class="container">
+        <div style="text-align: center;" class="center_tit">
+            <input class="is_none" type="text" value="一年级座位表">
+            <p class="is_show">一年级座位表</p>
+        </div>
+        <div class="tits">
+            <div class="left">
+                <input class="is_none" type="text" value="周周老师">
+                <p class="is_show star">周周老师</p>
+            </div>
+            <div class="center">
+                <!-- <div style="text-align: center;" class="center_tit">
+                    <input class="is_none" type="text" value="一年级座位表">
+                    <p class="is_show">一年级座位表</p>
+                </div> -->
+                <div class="tit">
+                    <button class="start">开始</button>
+                </div>
+            </div>
+            <div class="right">
+                <span class="edit">编辑</span>
+                <span class="complete">保存</span>
+            </div>
+        </div>
+        <div class="info">
+            <div class="list">
+                <div class="ul">
+                    <div class="li">
+                        <input class="is_none" type="text" value="敢敢">
+                        <p class="is_show">敢敢</p>
+                    </div>
+                    <div class="li">
+                        <input class="is_none" type="text" value="心心">
+                        <p class="is_show">心心</p>
+                    </div>
+                </div>
+                <div class="add">添加</div>
+            </div>
+            <div class="list">
+                <div class="ul">
+                    <div class="li">
+                        <input class="is_none" type="text" value="妞妞">
+                        <p class="is_show">妞妞</p>
+                    </div>
+                    <div class="li">
+                        <input class="is_none" type="text" value="泡泡">
+                        <p class="is_show">泡泡</p>
+                    </div>
+                </div>
+                <div class="add">添加</div>
+            </div>
+            <div class="column">添加一列</div>
+        </div>
+        <div class="message"><span></span> <p class="close">关闭 ×</p> <i class="i1"></i> <i class="i2"></i></div>
+    </div>
+</body>
+<script type="text/javascript" charset="utf-8"  src="./L2Dwidget.min.js"></script>
+<script type="text/javascript" charset="utf-8"  src="./L2Dwidget.0.min.js"></script>
+<script type="text/javascript">
+    var str = '什么是快乐星球？';
+    var text = undefined;
+    var arrText = [];
+    
+     L2Dwidget.init({ "model": { jsonPath:
+　　"https://unpkg.com/live2d-widget-model-shizuku@1.0.5/assets/shizuku.model.json",
+　　"scale": 1 }, "display": { "position": "left", "width": 150, "height": 300,
+　　"hOffset": 40, "vOffset": -20 }, "mobile": { "show": true, "scale": 0.5 },
+　　"react": { "opacityDefault": 0.7, "opacityOnHover": 0.2 },
+    "dialog": {
+    	"enable": true,
+        // 'hitokoto': true,
+    	"script": {
+			//每20s，显示一言（调用一言Api返回的句子）
+			'every idle 15s': '$hitokoto$',
+			// 'every': alertText('tapface'),
+			//触摸到class='star'对象
+			'hover .star': '星星在天上而你在我心里 (*/ω＼*)',
+			//触摸到身体
+			'tap body': '害羞⁄(⁄ ⁄•⁄ω⁄•⁄ ⁄)⁄',
+			//触摸到头部
+			'tap face': alertText('tapface'),
+      }
+	}});
+
+    // console.log(L2Dwidget)
+    L2Dwidget.on('*', (name) => {
+        // console.log('事件为： ' + name)
+        if(name == 'tap'){
+            alertText('tapface')
+        }
+    })
+
+    
+
+    function alertText(name) {
+        if(name=='tapface'){
+            text = str;
+        }else if(name=='tapbody'){
+            text = 'tapbody';
+        }
+        // console.log(text)
+        return text
+    }
+</script>
+<script>
+    var design = 640;
+    var base = 100;
+    var timer;
+    var showText = "";
+    var isStart = true;
+    var isEdit = false;
+    var arr = [];
+    var headInfo = {
+        teacher: "周周老师",
+        tit: "一年及"
+    };
+    var del = 0;
+    // document.documentElement.onclick = function(){
+    //     console.log('cis',cis.value)
+    // }
+
+    function responsive() {
+        if(JSON.parse(localStorage.getItem('arr'))){
+            // console.log(12345)
+            init()
+        }
+        var pageWidth = window.innerWidth;
+        // var pageWidth = document.getElementsByClassName('container')[0].clientWidth;
+        // console.log('pageWidth',pageWidth)
+
+        if(pageWidth<320){
+            pageWidth =  320;
+        }
+        if(pageWidth>750){
+            pageWidth = 750;
+        }
+
+        var size = pageWidth/design*base;
+        document.documentElement.style.fontSize = size + 'px';
+    }
+    responsive();
+    window.addEventListener('resize',responsive);
+
+    // 删除所有缓存
+    document.querySelector(".tits>.left>p").onclick = function () {
+        del++;
+        if(del >= 3){
+            let isDel = confirm("是否清除缓存") || false;
+            if(isDel){
+                localStorage.removeItem('arr');
+                localStorage.removeItem('headInfo');
+            }
+            del = 0;
+            window.location.reload();
+        }
+        // console.log('confirm',del)
+    }
+
+    document.querySelector(".start").onclick = function () {
+        if(isEdit) return false;
+        let index = document.querySelectorAll(".info>.list>.ul>.li");
+        // let random = parseInt(Math.random()*(index-1+1)+1);
+        let random;
+        let time = 5;
+        let id = 0;
+        let colorid;
+        if(isStart){
+            document.querySelector(".start").style.cursor = "no-drop";
+            isStart = false;
+            id = 0;
+        }else{
+            return false;
+        }
+        if(timer){
+            clearInterval(timer);
+        }
+        function ad() {
+            if(id>=50){
+                // isStart = true;
+                // document.querySelector(".start").style.cursor = "pointer";
+                clearInterval(timer);
+                // console.log('showText',showText)
+                document.querySelector(".message>span").innerText = showText;
+                document.querySelector(".message").style.backgroundColor = colorid;
+                document.querySelector(".message").style.display = 'flex';
+                return false;
+            }
+            id++;
+            random = parseInt(Math.random()*index.length);
+            // console.log(id,index,random,index[random]);
+            for(let t = 0; t < index.length; t++){
+                index[t].style.backgroundColor = "";
+            }
+            colorid = randcolor();
+            index[random].style.backgroundColor = colorid;
+            showText = index[random].children[0].value || index[random].children[0].defaultValue;
+        }
+        timer = setInterval(ad, 100);
+    }
+
+    var randcolor = () => {
+        let r = 100 + ~~(Math.random() * 100);
+        let g = 135 + ~~(Math.random() * 100);
+        let b = 100 + ~~(Math.random() * 100);
+        return `rgb(${r}, ${g}, ${b},1)`
+    }
+
+    // 关闭弹框
+    document.querySelector(".close").onclick = function close() {
+        document.querySelector(".message").style.display = 'none';
+        document.querySelector(".start").style.cursor = "pointer";
+        isStart = true;
+    }
+
+    // 编辑
+    document.querySelector(".tits>.right>.edit").onclick = function() {
+        if(!isStart) return false;
+        isEdit = true;
+        document.querySelector(".start").style.cursor = "no-drop";
+        document.querySelector(".tits>.right>.edit").style.display = "none";
+        document.querySelector(".tits>.right>.complete").style.display = "inline-block";
+        document.querySelector(".tits>.left>p").style.display = "none";
+        document.querySelector(".tits>.left>input").style.display = "block";
+        document.querySelector(".center_tit>p").style.display = "none";
+        document.querySelector(".center_tit>input").style.display = "block";
+        document.querySelector(".info>.column").style.display = "block";
+        document.querySelector(".info").style.width = "80%";
+        for(var i = 0; i < document.querySelectorAll(".info>.list>.ul>.li").length; i++){
+            document.querySelectorAll(".info>.list>.ul>.li>input")[i].style.display = "block";
+            document.querySelectorAll(".info>.list>.ul>.li>p")[i].style.display = "none";
+            document.querySelectorAll(".info>.list>.ul>.li>input")[i].value = document.querySelectorAll(".info>.list>.ul>.li>p")[i].innerText;
+        }
+        for(var j = 0; j < document.querySelectorAll(".info>.list").length; j++){
+            document.querySelectorAll(".info>.list>.add")[j].style.display = "block";
+        }
+    }
+    // 编辑
+    document.querySelector(".tits>.right>.complete").onclick = function() {
+        isEdit = false;
+        document.querySelector(".start").style.cursor = "pointer";
+        document.querySelector(".tits>.right>.edit").style.display = "inline-block";
+        document.querySelector(".tits>.right>.complete").style.display = "none";
+        document.querySelector(".tits>.left>p").style.display = "block";
+        document.querySelector(".tits>.left>input").style.display = "none";
+        document.querySelector(".center_tit>p").style.display = "block";
+        document.querySelector(".center_tit>input").style.display = "none";
+        document.querySelector(".info>.column").style.display = "none";
+        document.querySelector(".info").style.width = "100%";
+        document.querySelector(".tits>.left>p").innerText = document.querySelector(".tits>.left>input").value;
+        document.querySelector(".center_tit>p").innerText = document.querySelector(".center_tit>input").value;
+        for(var i = 0; i < document.querySelectorAll(".info>.list>.ul>.li").length; i++){
+            document.querySelectorAll(".info>.list>.ul>.li>input")[i].style.display = "none";
+            document.querySelectorAll(".info>.list>.ul>.li>p")[i].style.display = "block";
+            document.querySelectorAll(".info>.list>.ul>.li>p")[i].innerText = document.querySelectorAll(".info>.list>.ul>.li>input")[i].value;
+        }
+        for(var j = 0; j < document.querySelectorAll(".info>.list").length; j++){
+            document.querySelectorAll(".info>.list>.add")[j].style.display = "none";
+            arr[j] = [];
+            for(var k = 0; k < document.querySelectorAll(".info>.list")[j].children[0].children.length; k++){
+                arr[j].push(document.querySelectorAll(".info>.list")[j].children[0].children[k].innerText);
+            }
+            // console.log('22223',arr)
+        }
+        headInfo.teacher = document.querySelector(".tits>.left>input").value;
+        headInfo.tit = document.querySelector(".center_tit>input").value;
+        document.querySelector(".tits>.left>p").innerText = document.querySelector(".tits>.left>input").value;
+        document.querySelector(".center_tit>p").innerText = document.querySelector(".center_tit>input").value;
+        localStorage.setItem('arr',JSON.stringify(arr));
+        localStorage.setItem('headInfo',JSON.stringify(headInfo));
+        init();
+        // console.log('556666',JSON.parse(localStorage.getItem('arr')))
+    }
+    // 添加下一个
+    function adds() {
+        var list = document.querySelectorAll(".info>.list");
+        for(var a = 0 ; a < list.length ; a++){
+            list[a].onclick = add;
+        }
+    };
+    function add(ev) {
+        // console.log('tt',this,ev)
+        if(ev&&ev.target.className=="add"){
+            var ul = ev.target.previousElementSibling;
+            if(ev.target.previousElementSibling.children.length>=8){
+                return false;
+            }
+        }else{
+            return false;
+        }
+        var div = document.createElement("div");
+        var input = document.createElement("input");
+        var p = document.createElement("p");
+        div.className = "li";
+        input.className = "is_none";
+        input.style.display = "block";
+        input.type="text";
+        // input.setAttribute("value", "qqq");
+        input.placeholder = "姓名";
+        input.value = "姓名";
+        p.className = "is_show";
+        p.innerText = "姓名";
+        p.style.display = "none";
+        div.appendChild(input);
+        div.appendChild(p);
+        ul.appendChild(div);
+    }
+    // setTimeout(() => {
+        adds();
+    // }, 0);
+    // document.querySelector(".info").onclick = function(ev) {
+    //     console.log('info',ev,this)
+    // }
+    // 添加一列
+    // setTimeout(() => {
+        document.querySelector(".info>.column").onclick = addColumn;
+        function addColumn() {
+            if(document.querySelectorAll(".info>.list").length>=8){
+                return false;
+            }
+            // console.log(45666)
+            var list = document.createElement("div");
+            var ul = document.createElement("div");
+            var li = document.createElement("div");
+            var add = document.createElement("div");
+            var input = document.createElement("input");
+            var p = document.createElement("p");
+            list.className = "list";
+            ul.className = "ul";
+            add.className = "add";
+            add.innerText = "添加";
+            add.style.display = "block";
+            li.className = "li";
+            input.className = "is_none";
+            input.style.display = "block";
+            input.type="text";
+            input.placeholder = "姓名";
+            input.value = "姓名";
+            p.className = "is_show";
+            p.innerText = "姓名";
+            p.style.display = "none";
+            li.appendChild(p);
+            li.appendChild(input);
+            ul.appendChild(li);
+            list.appendChild(ul);
+            list.appendChild(add);
+            document.querySelector(".info").appendChild(list);
+            adds();
+        }
+    // }, 0);
+
+    function init() {
+        // <div class="list">
+        //     <div class="ul">
+        //         <div class="li">
+        //             <input class="is_none" type="text" value="15">
+        //             <p class="is_show">15</p>
+        //         </div>
+        //         <div class="li">
+        //             <input class="is_none" type="text" value="2">
+        //             <p class="is_show">2</p>
+        //         </div>
+        //     </div>
+        //     <div class="add">添加</div>
+        // </div>
+        var info = document.querySelector(".info");
+        arr = JSON.parse(localStorage.getItem('arr'));
+        if(JSON.parse(localStorage.getItem('headInfo'))){
+            headInfo = JSON.parse(localStorage.getItem('headInfo'));
+            document.querySelector(".tits>.left>input").value = headInfo.teacher;
+            document.querySelector(".center_tit>input").value = headInfo.tit;
+            document.querySelector(".tits>.left>p").innerText = headInfo.teacher;
+            document.querySelector(".center_tit>p").innerText = headInfo.tit;
+        }
+        
+        // console.log('init',JSON.parse(localStorage.getItem('arr')))
+        var lis = "";
+        for(var a = 0; a < arr.length; a++){
+            var li = "";
+            for(var b = 0; b < arr[a].length; b++){
+                // li += 'a'
+                li += `<div class="li">
+                            <input class="is_none" type="text" value="${arr[a][b]}">
+                            <p class="is_show">${arr[a][b]}</p>
+                        </div>`
+            }
+            // console.log('li',li)
+            // lis += 'b' + li + 'c' ; // baacbaac
+            lis += ` <div class="list">
+                        <div class="ul">`+ li +`</div>
+                         <div class="add">添加</div>
+                        </div>`
+        }
+        // console.log('init',lis)
+        info.innerHTML = lis + `<div class="column">添加一列</div>`;
+        adds();
+        document.querySelector(".info>.column").onclick = addColumn;
+    }
+    // init();
+    (function(){
+        var canvas = document.querySelector("#myCanvas");
+        var context = canvas.getContext('2d');
+        var rid;
+        var particles = []; // 粒子数
+        var timeid;
+        var isShow = true;
+        var colorBg = 'rgb(153, 143, 143)'
+
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize',resizeCanvas);
+        resizeCanvas();
+        clearCanvas();
+
+        function clearCanvas() {
+            context.fillStyle = '#000000';
+            context.fillRect(0, 0, canvas.width, canvas.height);
+        }
+        
+        function mouseDownHandler(e) {
+            if(!isShow) return false;
+            var x = e.clientX;
+            var y = e.clientY;
+            fire(x,y);
+        }
+
+        function fire(x,y){
+            
+            createFireworks(x,y);
+            isShow = false;
+
+            function tick(){
+                // console.log(111);
+                context.globalCompositeOperation = 'destination-out';
+                context.fillStyle = 'rgba(0,0,0,' + 10 / 100 + ')';
+                context.fillRect(0, 0, canvas.width, canvas.height);
+                context.globalCompositeOperation = 'lighter';
+
+                drawFireworks();
+                // rid = requestAnimationFrame(tick);
+            }
+            // cancelAnimationFrame(rid);
+            // tick();
+            timeid = setInterval(tick, 20);
+            setTimeout(() => {
+                clearInterval(timeid);
+                context.clearRect(0, 0, canvas.width, canvas.height);
+                clearCanvas()
+                isShow = true;
+            }, 3500);
+        }
+
+        function createFireworks(sx,sy) {
+            particles = [];
+            // RGBA(80, 223, 38, 1)
+            var hue = Math.floor(Math.random()*51)+150;
+            var hueVariance = 30;
+            var count = 100;
+
+            for(var j = 0; j < count; j++){
+                var p = {};
+                var angle = Math.floor(Math.random()*360);
+                p.radians = angle*Math.PI/180;
+                p.sx = sx;
+                p.sy = sy;
+                p.speed = (Math.random()*5)+0.4;
+                p.radius = p.speed;
+                p.size = Math.floor(Math.random()*3)+1;
+                p.hue = Math.floor(Math.random() * ((hue + hueVariance) - (hue - hueVariance))) + (hue - hueVariance);;
+                p.light = Math.floor(Math.random()*30)+50;
+                p.alpha = (Math.floor(Math.random() * 61) + 40) / 100;
+                particles.push(p);
+            }
+        }
+
+        function drawFireworks() {
+            // var count = 10; // 粒子数
+            // radius = 10; // 半径
+            clearCanvas();
+
+            for(var i = 0; i < particles.length; i++){
+                var p = particles[i];
+                var sx = Math.sin(p.radians)*p.radius;
+                var sy = Math.cos(p.radians)*p.radius+0.4;
+                p.sx += sx;
+                p.sy += sy;
+                // p.radius += 1+p.speed;
+                p.radius *= 1 - p.speed / 100;
+                p.alpha -= 0.005;
+                // var angle = 360/count*i;
+                // var radians = angle * Math.PI/180;
+                // var vx = sx + Math.sin(radians)*radius;
+                // var vy = sy + Math.cos(radians)*radius;
+                // var size = 2; // 圆的大小
+
+                context.beginPath();
+                context.arc(p.sx, p.sy, p.size, 0, Math.PI*2, false);
+                context.closePath();
+                context.fillStyle = "hsla("+p.hue+",100%,"+p.light+"%,"+p.alpha+")";
+                context.fill();
+            }
+        }
+
+
+        window.addEventListener('mousedown',mouseDownHandler);
+    })();
+</script>
+</html>
